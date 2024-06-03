@@ -1,20 +1,31 @@
 package gr.android.survey.ui.composable.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -25,8 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import gr.android.survey.R
 import gr.android.survey.ui.composable.modals.DebouncedButton
@@ -35,9 +44,9 @@ import gr.android.survey.ui.composable.modals.MessagePopUpStateModal
 import gr.android.survey.ui.composable.modals.NetworkBanner
 import gr.android.survey.ui.composable.modals.TopBar
 import gr.android.survey.ui.viewModel.QuestionsViewModel
+import gr.android.survey.utils.Button.CURRENT
 import gr.android.survey.utils.Button.NEXT
 import gr.android.survey.utils.Button.PREVIOUS
-import gr.android.survey.utils.Button.CURRENT
 import gr.android.survey.utils.SurveyRemoteState
 
 @Composable
@@ -104,14 +113,6 @@ fun SurveyScreenContent(
     val inputValue = remember { mutableStateOf(TextFieldValue()) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val view = LocalView.current
-    val insets = ViewCompat.getRootWindowInsets(view)
-
-    val isKeyboardVisible by remember {
-        derivedStateOf {
-            insets?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -129,10 +130,11 @@ fun SurveyScreenContent(
 
         LoaderModal(loaderVisibility)
 
-        Box(
+        Column(
             Modifier
                 .fillMaxSize()
                 .padding(contentPadding)
+                .verticalScroll(rememberScrollState())
         ) {
             Column(
                 Modifier
@@ -143,8 +145,7 @@ fun SurveyScreenContent(
                 Text(
                     modifier = Modifier
                         .padding(top = 16.dp, start = 8.dp, end = 8.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .weight(1f, fill = false),
+                        .align(Alignment.CenterHorizontally),
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
                     text = stringResource(id = R.string.questions_submitted, submittedQuestions),
                     textAlign = TextAlign.Center,
@@ -153,8 +154,7 @@ fun SurveyScreenContent(
                 Text(
                     modifier = Modifier
                         .padding(top = 8.dp, start = 8.dp, end = 8.dp, bottom = 24.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .weight(1f, fill = false),
+                        .align(Alignment.CenterHorizontally),
                     style = TextStyle(fontSize = 24.sp),
                     text = question ?: "",
                     textAlign = TextAlign.Center,
@@ -188,12 +188,12 @@ fun SurveyScreenContent(
                         textAlign = TextAlign.Center
                     )
                 }
-
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             Column(
                 modifier = Modifier
-                    .align(if (isKeyboardVisible) Alignment.Center else Alignment.BottomCenter)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -299,8 +299,8 @@ fun SurveyScreenContentPreview() {
         question = "What is your favorite food?",
         onAnswerText = { _, _ ->},
         listSize = 20,
-        isSubmitted = true,
-        surveyState = SurveyRemoteState.POST_SUCCESS,
+        isSubmitted = false,
+        surveyState = SurveyRemoteState.OTHER,
         answeredText = "i like red",
         questionCounter = 20,
         nextQuestion = {},
