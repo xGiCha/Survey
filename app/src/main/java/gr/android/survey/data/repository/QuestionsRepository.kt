@@ -30,19 +30,33 @@ class QuestionsRepositoryImp(
             is Result.Success -> {
                 itemsFlow.emit(Result.Success(response.data))
             }
-            is Result.NetworkError, is Result.ServerError -> {
+            is Result.NetworkError -> {
                 itemsFlow.emit(Result.NetworkError(Exception()))
+            }
+            is Result.ClientError -> {
+                itemsFlow.emit(Result.ClientError(response.httpCode, response.errorCode, response.errorMessage))
+            }
+            is Result.ServerError -> {
+                itemsFlow.emit(Result.ServerError(response.httpCode, response.errorCode, response.errorMessage))
+
             }
         }
     }
 
     override suspend fun postQuestions(answerSubmissionRequest: AnswerSubmissionRequest) {
-        when(questionsNetworkDataSource.postQuestions(answerSubmissionRequest)) {
+        when(val response = questionsNetworkDataSource.postQuestions(answerSubmissionRequest)) {
             is Result.Success -> {
                 postAnsweredQuestionResultFlow.emit(Result.Success(true))
             }
-            is Result.NetworkError, is Result.ServerError -> {
+            is Result.NetworkError -> {
                 postAnsweredQuestionResultFlow.emit(Result.NetworkError(Exception()))
+            }
+            is Result.ClientError -> {
+                postAnsweredQuestionResultFlow.emit(Result.ClientError(response.httpCode, response.errorCode, response.errorMessage))
+            }
+            is Result.ServerError -> {
+                postAnsweredQuestionResultFlow.emit(Result.ServerError(response.httpCode, response.errorCode, response.errorMessage))
+
             }
         }
     }

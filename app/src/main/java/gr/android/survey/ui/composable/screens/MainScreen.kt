@@ -12,6 +12,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gr.android.survey.R
 import gr.android.survey.ui.composable.modals.NetworkBanner
+
 
 @Composable
 fun MainScreen(
@@ -40,6 +43,8 @@ fun MainScreen(
 fun MainScreenContent(
     navigateToSurvey: () -> Unit
 ) {
+    val isNetworkConnected =  remember { mutableStateOf(true) }
+
     Scaffold(
         topBar = {
             Box(modifier = Modifier
@@ -64,7 +69,9 @@ fun MainScreenContent(
             }
         },
         bottomBar = {
-            NetworkBanner()
+            NetworkBanner { isConnected ->
+                isNetworkConnected.value = isConnected
+            }
         }
     ) { contentPadding ->
         Column(
@@ -76,7 +83,8 @@ fun MainScreenContent(
             verticalArrangement = Arrangement.Center
         ) {
             Button(
-                onClick = navigateToSurvey
+                onClick = navigateToSurvey,
+                enabled = isNetworkConnected.value
             ) {
                 Text(text = "Start survey")
             }

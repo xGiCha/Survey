@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class QuestionsViewModel @Inject constructor(
     private val questionsUseCase: QuestionsUseCase,
-    private val savedStateHandle: SavedStateHandle,
     private val answeredQuestionUseCase: AnsweredQuestionUseCase
 ): ViewModel() {
 
@@ -59,6 +57,7 @@ class QuestionsViewModel @Inject constructor(
                     is Resource.Error -> {
                         updateLoaderVisibility(false)
                         updateSurveyState(SurveyRemoteState.FETCH_LIST_ERROR)
+                        updateErrorMessage(it.message ?: "")
                     }
                     is Resource.Loading -> {
                         updateLoaderVisibility(true)
@@ -116,11 +115,12 @@ class QuestionsViewModel @Inject constructor(
                         updateLoaderVisibility(false)
                     }
                     is Resource.Loading -> {
-                        updateLoaderVisibility(true)
+                        updateLoaderVisibility(false)
                     }
                     is Resource.Error -> {
                         updateLoaderVisibility(false)
                         updateSurveyState(SurveyRemoteState.POST_ERROR)
+                        updateErrorMessage(it.message ?: "")
                     }
                 }
             }
@@ -128,7 +128,6 @@ class QuestionsViewModel @Inject constructor(
     }
     fun postQuestion(id: Int, answer: String) {
         viewModelScope.launch{
-            updateLoaderVisibility(true)
             questionsUseCase.postQuestions(AnswerSubmissionRequest(id, answer))
             updateAnsweredText(answer)
         }
@@ -178,6 +177,10 @@ class QuestionsViewModel @Inject constructor(
         _uiState.clickableBackground = clickableBackground
     }
 
+    fun updateErrorMessage(errorMessage: String) {
+        _uiState.errorMessage = errorMessage
+    }
+
     @Stable
     interface QuestionsUiState {
         val answeredQuestionUiModel: AnsweredQuestionUiModel?
@@ -188,6 +191,7 @@ class QuestionsViewModel @Inject constructor(
         val submittedQuestions: Int
         val questionCounter: Int
         val clickableBackground: Boolean
+        val errorMessage: String?
     }
 
     class MutableQuestionsUiState(
@@ -201,5 +205,6 @@ class QuestionsViewModel @Inject constructor(
         override var submittedQuestions: Int by mutableIntStateOf(0)
         override var questionCounter: Int by mutableIntStateOf(0)
         override var clickableBackground: Boolean by mutableStateOf(true)
+        override var errorMessage: String? by mutableStateOf(null)
     }
 }

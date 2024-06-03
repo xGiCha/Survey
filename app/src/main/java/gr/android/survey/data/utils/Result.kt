@@ -7,4 +7,7 @@ sealed class Result<out T> {
         Result<Nothing>()
 
     data class NetworkError(val exception: Exception) : Result<Nothing>()
+
+    data class ClientError(val httpCode: Int, val errorCode: Int, val errorMessage: String?) :
+        Result<Nothing>()
 }

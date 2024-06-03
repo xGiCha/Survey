@@ -58,6 +58,7 @@ fun SurveyScreen(
         loaderVisibility = questionsViewModel.uiState.loaderVisibility,
         submittedQuestions = questionsViewModel.uiState.submittedQuestions,
         clickableBackground = questionsViewModel.uiState.clickableBackground,
+        errorMessage = questionsViewModel.uiState.errorMessage,
         onAnswerText = { id, answeredText ->
             questionsViewModel.postQuestion(id, answeredText)
         },
@@ -92,6 +93,7 @@ fun SurveyScreenContent(
     loaderVisibility: Boolean = false,
     clickableBackground: Boolean = true,
     submittedQuestions: Int,
+    errorMessage: String? = null,
     onAnswerText: (Int, String) -> Unit,
     nextQuestion: (String) -> Unit,
     previousQuestion: (String) -> Unit,
@@ -119,7 +121,9 @@ fun SurveyScreenContent(
             )
         },
         bottomBar = {
-            NetworkBanner()
+            NetworkBanner(
+                onConnectivityChange = {}
+            )
         }
     ) { contentPadding ->
 
@@ -281,7 +285,8 @@ fun SurveyScreenContent(
         onSurveyState = onSurveyState,
         inputValue = inputValue,
         onClickableBackground = onClickableBackground,
-        onAnswerText = onAnswerText
+        onAnswerText = onAnswerText,
+        errorMessage = errorMessage
     )
 
 

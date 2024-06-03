@@ -16,6 +16,7 @@ fun MessagePopUpStateModal(
     onClickableBackground: (Boolean) -> Unit,
     onAnswerText: (Int, String) -> Unit,
     id: Int?,
+    errorMessage: String? = null
 ) {
     when(surveyState) {
         SurveyRemoteState.POST_SUCCESS -> {
@@ -40,7 +41,7 @@ fun MessagePopUpStateModal(
                 onDismiss = {
                     onSurveyState?.invoke(SurveyRemoteState.OTHER)
                 },
-                errorMessage = stringResource(id = R.string.post_error_message),
+                errorMessage = stringResource(id = R.string.post_error_message, errorMessage ?: ""),
                 tryAgainBtnVisibility = true,
                 onClickableBackground = onClickableBackground
             )
@@ -52,7 +53,7 @@ fun MessagePopUpStateModal(
                 onDismiss = {
                     onSurveyState?.invoke(SurveyRemoteState.OTHER)
                 },
-                errorMessage = stringResource(id = R.string.server_error_message),
+                errorMessage = errorMessage ?: "",
                 tryAgainBtnVisibility = false,
                 disableDelay = true,
                 onClickableBackground = onClickableBackground

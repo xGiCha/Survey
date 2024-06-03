@@ -30,7 +30,9 @@ import gr.android.survey.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun NetworkBanner() {
+fun NetworkBanner(
+    onConnectivityChange: (Boolean) -> Unit
+) {
     val context = LocalContext.current
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -44,6 +46,7 @@ fun NetworkBanner() {
         val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
         isConnected =
             networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        onConnectivityChange(isConnected)
     }
 
     LaunchedEffect(Unit) {
@@ -58,6 +61,7 @@ fun NetworkBanner() {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 isConnected = true
+                onConnectivityChange(isConnected)
                 if (!firstLoad) {
                     showBanner = true
                 }
@@ -66,6 +70,7 @@ fun NetworkBanner() {
 
             override fun onLost(network: Network) {
                 isConnected = false
+                onConnectivityChange(isConnected)
                 showBanner = true
                 firstLoad = false
             }
@@ -117,5 +122,7 @@ fun NetworkBanner() {
 @Preview(showBackground = true)
 @Composable
 fun NetworkBannerScreen() {
-    NetworkBanner()
+    NetworkBanner(
+        onConnectivityChange = {}
+    )
 }

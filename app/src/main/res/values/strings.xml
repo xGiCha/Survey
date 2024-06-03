@@ -2,7 +2,7 @@
     <string name="app_name">Survey</string>
     <string name="welcome">Welcome</string>
     <string name="post_success_message">Success</string>
-    <string name="post_error_message">The answer could not be submitted. Please try again</string>
+    <string name="post_error_message">%1$s. Please try again</string>
     <string name="server_error_message">Network is not working. Please check network settings</string>
     <string name="network_connected_message">Connected</string>
     <string name="network_disconnected_message">Disconnected</string>

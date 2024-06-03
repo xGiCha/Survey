@@ -45,8 +45,16 @@ class QuestionsUseCaseImpl(
                         questionsItemsFlow.emit(Resource.Success(it.data?.mapToQuestionsUiModel() ?: QuestionsUiModel()))
                         answeredQuestionsRepository.setInitQuestionList(it.data ?: RemoteSurvey())
                     }
-                    is Result.NetworkError, is  Result.ServerError-> {
-                        questionsItemsFlow.emit(Resource.Error("Something went wrong"))
+                    is  Result.ServerError-> {
+                        questionsItemsFlow.emit(Resource.Error(it.errorMessage ?: ""))
+                    }
+
+                    is Result.NetworkError -> {
+                        questionsItemsFlow.emit(Resource.Error(message = it.exception.message ?: ""))
+                    }
+
+                    is Result.ClientError -> {
+                        questionsItemsFlow.emit(Resource.Error(message = it.errorMessage ?: ""))
                     }
                 }
             }
@@ -57,8 +65,16 @@ class QuestionsUseCaseImpl(
                     is Result.Success -> {
                         postAnsweredQuestionResultFlow.emit(Resource.Success(true))
                     }
-                    is Result.NetworkError, is Result.ServerError-> {
-                        postAnsweredQuestionResultFlow.emit(Resource.Error("Something went wrong"))
+                    is  Result.ServerError-> {
+                        postAnsweredQuestionResultFlow.emit(Resource.Error(it.errorMessage ?: ""))
+                    }
+
+                    is Result.NetworkError -> {
+                        postAnsweredQuestionResultFlow.emit(Resource.Error(message = it.exception.message ?: ""))
+                    }
+
+                    is Result.ClientError -> {
+                        postAnsweredQuestionResultFlow.emit(Resource.Error(message = it.errorMessage ?: ""))
                     }
                 }
             }
@@ -74,7 +90,6 @@ class QuestionsUseCaseImpl(
 
     override suspend fun postQuestions(answerSubmissionRequest: AnswerSubmissionRequest) {
         scope.launch(Dispatchers.IO) {
-            questionsItemsFlow.emit(Resource.Loading())
             questionsRepository.postQuestions(answerSubmissionRequest)
         }
     }
