@@ -12,9 +12,10 @@ import gr.android.survey.utils.debounce
 fun DebouncedButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    debounceTime: Long = 300L,
+    debounceTime: Long = 200L,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
-    content: @Composable RowScope.() -> Unit
+    enable: Boolean = true,
+    content: @Composable RowScope.() -> Unit,
 ) {
     val debouncedOnClick = onClick.debounce(debounceTime)
 
@@ -22,6 +23,7 @@ fun DebouncedButton(
         onClick = debouncedOnClick,
         modifier = modifier,
         colors = colors,
-        content = content
+        content = content,
+        enabled = enable
     )
 }

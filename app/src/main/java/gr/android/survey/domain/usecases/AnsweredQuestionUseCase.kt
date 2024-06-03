@@ -7,9 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -18,19 +16,15 @@ interface AnsweredQuestionUseCase {
     val item: SharedFlow<AnsweredQuestionUiModel>
     val allReady: SharedFlow<Boolean>
     val submittedQuestions: SharedFlow<Int>
-    val questionCounter: StateFlow<Int>
 
     suspend fun setAnsweredQuestion(id: Int, question: String?, isSubmitted: Boolean?, answeredText: String)
-    suspend fun getAnsweredQuestionByIndex(buttonAction: String)
+    suspend fun getAnsweredQuestionByIndex(buttonAction: String, index: Int)
 }
 
 class AnsweredQuestionUseCaseImpl(
     private val answeredQuestionsRepository: AnsweredQuestionsRepository
 ) : AnsweredQuestionUseCase {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    private val questionCounterFlow: MutableStateFlow<Int> = MutableStateFlow(1)
-    override val questionCounter: StateFlow<Int> = questionCounterFlow
 
     private val submittedQuestionsFlow: MutableSharedFlow<Int> = MutableSharedFlow()
     override val submittedQuestions: SharedFlow<Int> = submittedQuestionsFlow
@@ -59,12 +53,6 @@ class AnsweredQuestionUseCaseImpl(
             }
         }
 
-        scope.launch(Dispatchers.IO) {
-            answeredQuestionsRepository.questionCounter.collectLatest {
-                questionCounterFlow.emit(it)
-            }
-        }
-
     }
 
     override suspend fun setAnsweredQuestion(
@@ -76,7 +64,7 @@ class AnsweredQuestionUseCaseImpl(
         answeredQuestionsRepository.setAnsweredQuestion(id, question, isSubmitted, answeredText)
     }
 
-    override suspend fun getAnsweredQuestionByIndex(buttonAction: String) {
-        answeredQuestionsRepository.getAnsweredQuestionByIndex(buttonAction)
+    override suspend fun getAnsweredQuestionByIndex(buttonAction: String, index: Int) {
+        answeredQuestionsRepository.getAnsweredQuestionByIndex(buttonAction, index)
     }
 }

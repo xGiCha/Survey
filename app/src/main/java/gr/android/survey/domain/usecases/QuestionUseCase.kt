@@ -83,7 +83,6 @@ class QuestionsUseCaseImpl(
 
     override suspend fun getQuestions() {
         scope.launch(Dispatchers.IO) {
-            questionsItemsFlow.emit(Resource.Loading())
             questionsRepository.getQuestions()
         }
     }

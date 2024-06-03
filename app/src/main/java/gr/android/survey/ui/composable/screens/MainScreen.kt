@@ -24,17 +24,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import gr.android.survey.R
 import gr.android.survey.ui.composable.modals.NetworkBanner
+import gr.android.survey.ui.viewModel.QuestionsViewModel
 
 
 @Composable
 fun MainScreen(
+    questionsViewModel: QuestionsViewModel = hiltViewModel(),
     navigateToSurvey: () -> Unit
 ) {
 
     MainScreenContent(
-        navigateToSurvey = navigateToSurvey
+        navigateToSurvey = {
+            navigateToSurvey()
+            questionsViewModel.resetSurvey()
+        }
     )
 
 }
@@ -52,7 +58,8 @@ fun MainScreenContent(
                 .padding(12.dp)) {
                 IconButton(
                     onClick = {},
-                    modifier = Modifier.align(Alignment.CenterStart)
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
                         .alpha(0f)
                 ) {
                     Icon(

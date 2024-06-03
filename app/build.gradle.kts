@@ -106,6 +106,10 @@ dependencies {
     implementation(libs.coilSvg)
     implementation(libs.coil)
     implementation(libs.coil.compose)
+
+    // pager
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 }
 
 ksp {
