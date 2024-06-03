@@ -19,19 +19,10 @@ lifecycleRuntimeKtx = "2.7.0"
 loggingInterceptor = "4.12.0"
 navigationCompose = "2.7.7"
 retrofit = "2.9.0"
-playServicesBase = "18.3.0"
-playServicesAuth = "21.0.0"
-biometrics = "1.1.0"
-roomCompiler = "2.6.1"
-roomKtx = "2.6.1"
-roomRuntime = "2.6.1"
-securePrefs = "1.1.0-alpha04"
 moshi = "1.14.0"
-animations = "1.6.6"
-lottie =  "5.2.0"
 ksp = "1.9.0-1.0.13"
-playServicesLocation = "21.2.0"
 firebaseAuthKtx = "23.0.0"
+constraint = "1.0.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -67,6 +58,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi"}
 coilSvg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+constraint-compose = { module = "androidx.constraintlayout:constraintlayout-compose",  version.ref = "constraint" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

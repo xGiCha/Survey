@@ -1,7 +1,6 @@
 package gr.android.survey.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,14 +33,17 @@ fun SurveyNavHost(
         }
 
         composable(Screen.SurveyQuestions.route) {
-            SurveyScreen()
+            SurveyScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
 
 sealed class Screen(
-    val route: String,
-    val navArguments: List<NamedNavArgument> = emptyList()
+    val route: String
 ) {
     data object Main : Screen("main")
     data object SurveyQuestions : Screen("surveyQuestions")

@@ -26,8 +26,6 @@ fun AnsweredQuestionItem.mapToAnsweredQuestionUiModel(): AnsweredQuestionUiModel
         id = this.id,
         question = this.question,
         isSubmitted = this.isSubmitted,
-        answeredText = this.answeredText,
-        index = this.index ?: 0,
-        listSize = this.listSize
+        answeredText = this.answeredText
     )
 }

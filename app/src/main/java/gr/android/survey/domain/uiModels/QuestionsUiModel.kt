@@ -1,7 +1,7 @@
 package gr.android.survey.domain.uiModels
 
 data class QuestionsUiModel(
-    val questions: List<QuestionItemUiModel>
+    val questions: List<QuestionItemUiModel>? = null
 )
 
 data class QuestionItemUiModel(

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 interface QuestionsUseCase {
-    val items: StateFlow<Resource<Boolean>>
+    val questions: StateFlow<Resource<QuestionsUiModel>>
     val postAnsweredQuestionResult: SharedFlow<Resource<Boolean>>
 
     suspend fun getQuestions()
@@ -32,8 +32,8 @@ class QuestionsUseCaseImpl(
 ) : QuestionsUseCase {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val questionsItemsFlow: MutableStateFlow<Resource<Boolean>> = MutableStateFlow(Resource.Loading())
-    override val items: StateFlow<Resource<Boolean>> = questionsItemsFlow
+    private val questionsItemsFlow: MutableStateFlow<Resource<QuestionsUiModel>> = MutableStateFlow(Resource.Loading())
+    override val questions: StateFlow<Resource<QuestionsUiModel>> = questionsItemsFlow
 
     private val postAnsweredQuestionResultFlow: MutableSharedFlow<Resource<Boolean>> = MutableSharedFlow()
     override val postAnsweredQuestionResult: SharedFlow<Resource<Boolean>> = postAnsweredQuestionResultFlow
@@ -44,6 +44,7 @@ class QuestionsUseCaseImpl(
             questionsRepository.items.collectLatest {
                 when (it) {
                     is Result.Success -> {
+                        questionsItemsFlow.emit(Resource.Success(it.data?.mapToQuestionsUiModel() ?: QuestionsUiModel()))
                         answeredQuestionsRepository.setInitQuestionList(it.data ?: RemoteSurvey())
                     }
                     is Result.NetworkError, is  Result.ServerError-> {
