@@ -1,5 +1,17 @@
 <resources>
     <string name="app_name">Survey</string>
+    <string name="welcome">Welcome</string>
     <string name="post_success_message">Success</string>
     <string name="post_error_message">The answer could not be submitted. Please try again</string>
+    <string name="server_error_message">Network is not working. Please check network settings</string>
+    <string name="network_connected_message">Connected</string>
+    <string name="network_disconnected_message">Disconnected</string>
+    <string name="toolbar_title">Survey Questions</string>
+    <string name="questions_submitted">Questions submitted: %1$s</string>
+    <string name="enter_answer">Enter answer</string>
+    <string name="questions_metrics">Questions: %1$s/%2$s</string>
+    <string name="submit">Submit</string>
+    <string name="next_btn">Next</string>
+    <string name="previous_btn">Previous</string>
+    <string name="try_again">Try again</string>
 </resources>

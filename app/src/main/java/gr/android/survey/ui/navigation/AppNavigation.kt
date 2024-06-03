@@ -5,8 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import gr.android.survey.ui.composable.MainScreen
-import gr.android.survey.ui.composable.SurveyScreen
+import gr.android.survey.ui.composable.screens.MainScreen
+import gr.android.survey.ui.composable.screens.SurveyScreen
 
 @Composable
 fun SurveyApp() {

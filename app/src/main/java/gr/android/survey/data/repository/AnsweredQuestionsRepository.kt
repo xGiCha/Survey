@@ -15,9 +15,7 @@ interface AnsweredQuestionsRepository {
     val questionCounter: StateFlow<Int>
 
     suspend fun setAnsweredQuestion(id: Int, question: String?, isSubmitted: Boolean?, answeredText: String)
-
     suspend fun getAnsweredQuestionByIndex(buttonAction: String)
-
     suspend fun setInitQuestionList(questionList: RemoteSurvey)
 }
 
@@ -75,17 +73,16 @@ class AnsweredQuestionsRepositoryImp(
     }
 
     override suspend fun setInitQuestionList(questionList: RemoteSurvey) {
-        if (questionList.size > 0) {
-            questionList.forEachIndexed { index, listItem ->
-                answeredQuestions.add(
+        if (questionList.isNotEmpty()) {
+            answeredQuestions.addAll(
+                questionList.map { listItem ->
                     AnsweredQuestionItem(
                         id = listItem.id,
                         question = listItem.question
                     )
-                )
-            }
+                }
+            )
             allReadyFlow.emit(true)
         }
-
     }
 }

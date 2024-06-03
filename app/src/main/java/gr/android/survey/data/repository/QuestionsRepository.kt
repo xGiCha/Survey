@@ -30,7 +30,7 @@ class QuestionsRepositoryImp(
             is Result.Success -> {
                 itemsFlow.emit(Result.Success(response.data))
             }
-            else -> {
+            is Result.NetworkError, is Result.ServerError -> {
                 itemsFlow.emit(Result.NetworkError(Exception()))
             }
         }
@@ -41,7 +41,7 @@ class QuestionsRepositoryImp(
             is Result.Success -> {
                 postAnsweredQuestionResultFlow.emit(Result.Success(true))
             }
-            else -> {
+            is Result.NetworkError, is Result.ServerError -> {
                 postAnsweredQuestionResultFlow.emit(Result.NetworkError(Exception()))
             }
         }

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 interface QuestionsUseCase {
-    val questions: StateFlow<Resource<QuestionsUiModel>>
+    val questions: SharedFlow<Resource<QuestionsUiModel>>
     val postAnsweredQuestionResult: SharedFlow<Resource<Boolean>>
 
     suspend fun getQuestions()
@@ -32,8 +32,8 @@ class QuestionsUseCaseImpl(
 ) : QuestionsUseCase {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val questionsItemsFlow: MutableStateFlow<Resource<QuestionsUiModel>> = MutableStateFlow(Resource.Loading())
-    override val questions: StateFlow<Resource<QuestionsUiModel>> = questionsItemsFlow
+    private val questionsItemsFlow: MutableSharedFlow<Resource<QuestionsUiModel>> = MutableSharedFlow()
+    override val questions: SharedFlow<Resource<QuestionsUiModel>> = questionsItemsFlow
 
     private val postAnsweredQuestionResultFlow: MutableSharedFlow<Resource<Boolean>> = MutableSharedFlow()
     override val postAnsweredQuestionResult: SharedFlow<Resource<Boolean>> = postAnsweredQuestionResultFlow
@@ -69,12 +69,14 @@ class QuestionsUseCaseImpl(
 
     override suspend fun getQuestions() {
         scope.launch(Dispatchers.IO) {
+            questionsItemsFlow.emit(Resource.Loading())
             questionsRepository.getQuestions()
         }
     }
 
     override suspend fun postQuestions(answerSubmissionRequest: AnswerSubmissionRequest) {
         scope.launch(Dispatchers.IO) {
+            questionsItemsFlow.emit(Resource.Loading())
             questionsRepository.postQuestions(answerSubmissionRequest)
         }
     }

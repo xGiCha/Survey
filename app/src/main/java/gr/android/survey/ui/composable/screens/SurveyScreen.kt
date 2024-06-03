@@ -1,19 +1,13 @@
-package gr.android.survey.ui.composable
+package gr.android.survey.ui.composable.screens
 
-import FullScreenMessagePopup
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -22,7 +16,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,11 +29,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import gr.android.survey.R
+import gr.android.survey.ui.composable.modals.DebouncedButton
+import gr.android.survey.ui.composable.modals.LoaderModal
+import gr.android.survey.ui.composable.modals.MessagePopUpStateModal
+import gr.android.survey.ui.composable.modals.NetworkBanner
+import gr.android.survey.ui.composable.modals.TopBar
 import gr.android.survey.ui.viewModel.QuestionsViewModel
 import gr.android.survey.utils.Button.NEXT
 import gr.android.survey.utils.Button.PREVIOUS
 import gr.android.survey.utils.Button.CURRENT
-import gr.android.survey.utils.MessageState
 import gr.android.survey.utils.SurveyRemoteState
 
 @Composable
@@ -60,6 +57,7 @@ fun SurveyScreen(
         surveyState = questionsViewModel.uiState.surveyState,
         loaderVisibility = questionsViewModel.uiState.loaderVisibility,
         submittedQuestions = questionsViewModel.uiState.submittedQuestions,
+        clickableBackground = questionsViewModel.uiState.clickableBackground,
         onAnswerText = { id, answeredText ->
             questionsViewModel.postQuestion(id, answeredText)
         },
@@ -73,12 +71,15 @@ fun SurveyScreen(
             questionsViewModel.updateSurveyState(it)
             questionsViewModel.getAnsweredQuestionByIndex(buttonAction = CURRENT.action)
         },
-        onBack = onBack
+        onBack = onBack,
+        onClickableBackground = {
+            questionsViewModel.updateClickableBackground(it)
+        }
     )
 
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SurveyScreenContent(
     id: Int? = null,
@@ -89,12 +90,14 @@ fun SurveyScreenContent(
     answeredText: String? = null,
     surveyState: SurveyRemoteState,
     loaderVisibility: Boolean = false,
+    clickableBackground: Boolean = true,
     submittedQuestions: Int,
     onAnswerText: (Int, String) -> Unit,
     nextQuestion: (String) -> Unit,
     previousQuestion: (String) -> Unit,
     onSurveyState: ((SurveyRemoteState, ) -> Unit)? = null,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onClickableBackground: (Boolean) -> Unit
 ) {
     val inputValue = remember { mutableStateOf(TextFieldValue()) }
     val focusManager = LocalFocusManager.current
@@ -102,42 +105,26 @@ fun SurveyScreenContent(
     val view = LocalView.current
     val insets = ViewCompat.getRootWindowInsets(view)
 
+    val isKeyboardVisible by remember {
+        derivedStateOf {
+            insets?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
+        }
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Survey Questions",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_left),
-                            contentDescription = null
-                        )
-                    }
-                },
-                modifier = Modifier.padding(top = 12.dp)
+            TopBar(
+                clickableBackground = clickableBackground,
+                onBack = onBack
             )
+        },
+        bottomBar = {
+            NetworkBanner()
         }
     ) { contentPadding ->
 
-        when(loaderVisibility) {
-            true -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            else -> {
-                
-            }
-        }
+        LoaderModal(loaderVisibility)
+
         Box(
             Modifier
                 .fillMaxSize()
@@ -155,7 +142,7 @@ fun SurveyScreenContent(
                         .align(Alignment.CenterHorizontally)
                         .weight(1f, fill = false),
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                    text = "Questions submitted: $submittedQuestions",
+                    text = stringResource(id = R.string.questions_submitted, submittedQuestions),
                     textAlign = TextAlign.Center,
                 )
 
@@ -177,7 +164,7 @@ fun SurveyScreenContent(
                         },
                         modifier = Modifier
                             .padding(top = 32.dp, start = 8.dp, end = 8.dp),
-                        label = { Text("Enter answer") },
+                        label = { Text(stringResource(id = R.string.enter_answer)) },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Done
                         ),
@@ -186,7 +173,8 @@ fun SurveyScreenContent(
                                 focusManager.clearFocus()
                                 keyboardController?.hide()
                             }
-                        )
+                        ),
+                        enabled = clickableBackground
                     )
                 } else {
                     Text(
@@ -197,12 +185,6 @@ fun SurveyScreenContent(
                     )
                 }
 
-            }
-
-            val isKeyboardVisible by remember {
-                derivedStateOf {
-                    insets?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
-                }
             }
 
             Column(
@@ -217,7 +199,7 @@ fun SurveyScreenContent(
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(text = "Questions: ${questionCounter}/${listSize}")
+                        Text(text = stringResource(id = R.string.questions_metrics, questionCounter, listSize))
                     }
                 }
 
@@ -238,7 +220,7 @@ fun SurveyScreenContent(
                         contentColor = colorResource(R.color.white),
                     )
                 ) {
-                    Text("Submit")
+                    Text(stringResource(id = R.string.submit))
                 }
 
                 Row(
@@ -260,9 +242,10 @@ fun SurveyScreenContent(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorResource(R.color.orange.takeIf { questionCounter != 1 } ?: R.color.grey),
                             contentColor = colorResource(R.color.white),
-                        )
+                        ),
+                        enabled = clickableBackground
                     ) {
-                        Text("Previes")
+                        Text(stringResource(id = R.string.previous_btn))
                     }
 
                     Spacer(modifier = Modifier.width(12.dp))
@@ -281,9 +264,10 @@ fun SurveyScreenContent(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorResource(R.color.green.takeIf { questionCounter != listSize } ?: R.color.grey),
                             contentColor = colorResource(R.color.white)
-                        )
+                        ),
+                        enabled = clickableBackground
                     ) {
-                        Text("Next")
+                        Text(stringResource(id = R.string.next_btn))
                     }
                 }
             }
@@ -291,45 +275,16 @@ fun SurveyScreenContent(
 
     }
 
-    when(surveyState) {
-        SurveyRemoteState.POST_SUCCESS -> {
-            FullScreenMessagePopup(
-                MessageState.Success,
-                onRetry = {},
-                onDismiss = {
-                    onSurveyState?.invoke(SurveyRemoteState.OTHER)
-                },
-                errorMessage = "",
-                tryAgainBtnVisibility = false
-            )
-            inputValue.value = TextFieldValue("")
-        }
-        SurveyRemoteState.POST_ERROR -> {
-            FullScreenMessagePopup(
-                MessageState.Error,
-                onRetry = {
-                    onAnswerText(id ?: -1, inputValue.value.text)
-                },
-                onDismiss = {
-                },
-                errorMessage = stringResource(id = R.string.post_error_message),
-                tryAgainBtnVisibility = true
-            )
-        }
-        SurveyRemoteState.FETCH_LIST_ERROR -> {
-            FullScreenMessagePopup(
-                MessageState.Error,
-                onRetry = {
-                    onAnswerText(id ?: -1, inputValue.value.text)
-                },
-                onDismiss = {
-                },
-                errorMessage = "",
-                tryAgainBtnVisibility = false
-            )
-        }
-        SurveyRemoteState.OTHER -> {}
-    }
+    MessagePopUpStateModal(
+        id = id,
+        surveyState = surveyState,
+        onSurveyState = onSurveyState,
+        inputValue = inputValue,
+        onClickableBackground = onClickableBackground,
+        onAnswerText = onAnswerText
+    )
+
+
 }
 
 @Preview(showBackground = true)
@@ -346,6 +301,7 @@ fun SurveyScreenContentPreview() {
         nextQuestion = {},
         previousQuestion = {},
         submittedQuestions = 5,
-        onBack = {}
+        onBack = {},
+        onClickableBackground = {}
     )
 }

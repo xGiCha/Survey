@@ -173,6 +173,11 @@ class QuestionsViewModel @Inject constructor(
         _uiState.questionCounter = questionCounter
     }
 
+
+    fun updateClickableBackground(clickableBackground: Boolean) {
+        _uiState.clickableBackground = clickableBackground
+    }
+
     @Stable
     interface QuestionsUiState {
         val answeredQuestionUiModel: AnsweredQuestionUiModel?
@@ -182,6 +187,7 @@ class QuestionsViewModel @Inject constructor(
         val loaderVisibility: Boolean
         val submittedQuestions: Int
         val questionCounter: Int
+        val clickableBackground: Boolean
     }
 
     class MutableQuestionsUiState(
@@ -194,5 +200,6 @@ class QuestionsViewModel @Inject constructor(
         override var loaderVisibility: Boolean by mutableStateOf(false)
         override var submittedQuestions: Int by mutableIntStateOf(0)
         override var questionCounter: Int by mutableIntStateOf(0)
+        override var clickableBackground: Boolean by mutableStateOf(true)
     }
 }
