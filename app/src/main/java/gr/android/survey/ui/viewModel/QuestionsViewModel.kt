@@ -117,9 +117,9 @@ class QuestionsViewModel @Inject constructor(
         }
     }
     fun postQuestion(id: Int, answer: String) {
+        updateAnsweredText(answer)
         viewModelScope.launch{
             questionsUseCase.postQuestions(AnswerSubmissionRequest(id, answer))
-            updateAnsweredText(answer)
         }
     }
 
