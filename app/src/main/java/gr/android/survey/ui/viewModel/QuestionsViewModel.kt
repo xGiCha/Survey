@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class QuestionsViewModel @Inject constructor(
     private val questionsUseCase: QuestionsUseCase,
