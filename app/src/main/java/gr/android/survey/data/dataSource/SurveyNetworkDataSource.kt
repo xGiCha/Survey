@@ -5,7 +5,6 @@ import gr.android.survey.data.remoteEntities.AnswerSubmissionRequest
 import gr.android.survey.data.remoteEntities.RemoteSurvey
 import gr.android.survey.data.utils.call
 import gr.android.survey.data.utils.Result
-import retrofit2.Response
 
 interface QuestionsNetworkDataSource {
     suspend fun getQuestions(): Result<RemoteSurvey>

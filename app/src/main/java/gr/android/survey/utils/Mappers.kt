@@ -24,7 +24,6 @@ fun RemoteSurvey.mapToQuestionsUiModel(): QuestionsUiModel {
 fun AnsweredQuestionItem.mapToAnsweredQuestionUiModel(): AnsweredQuestionUiModel {
     return AnsweredQuestionUiModel(
         id = this.id,
-        question = this.question,
         isSubmitted = this.isSubmitted,
         answeredText = this.answeredText
     )

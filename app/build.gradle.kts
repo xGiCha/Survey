@@ -73,12 +73,9 @@ dependencies {
 
     // hilt
     implementation(libs.hilt.android)
-//    kapt(libs.hilt.android.compiler)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // support fragments inside compose
-    //implementation("androidx.fragment:fragment:1.6.2")
     implementation(libs.androidx.compose.ui)
 
     // views
@@ -94,6 +91,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     androidTestImplementation(libs.androidx.navigation.testing)
 
+
     //retrofit
     implementation(libs.retrofit)
     implementation(libs.logging.interceptor)
@@ -102,10 +100,24 @@ dependencies {
 
     implementation(libs.moshi)
 
+    // mockito
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.core.testing)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.android)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.coroutines.core)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.coroutines.core)
+
     // Coil
     implementation(libs.coilSvg)
     implementation(libs.coil)
     implementation(libs.coil.compose)
+
+    // pager
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 }
 
 ksp {

@@ -23,6 +23,12 @@ moshi = "1.14.0"
 ksp = "1.9.0-1.0.13"
 firebaseAuthKtx = "23.0.0"
 constraint = "1.0.1"
+pager = "0.28.0"
+mockito = "4.0.0"
+coreTestingVersion = "2.2.0"
+coroutineTestVersion = "1.7.3"
+coroutinesCore = "1.4.3"
+mockitoCore = "4.0.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -59,6 +65,16 @@ moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi"}
 coilSvg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 constraint-compose = { module = "androidx.constraintlayout:constraintlayout-compose",  version.ref = "constraint" }
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager",  version.ref = "pager" }
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators",  version.ref = "pager" }
+mockito-inline = { module = "org.mockito:mockito-inline",  version.ref = "mockito" }
+core-testing = { module = "androidx.arch.core:core-testing",  version.ref = "coreTestingVersion" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin",  version.ref = "mockito" }
+mockito-android = { module = "org.mockito:mockito-android",  version.ref = "mockito" }
+kotlin-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test-jvm",  version.ref = "coroutineTestVersion" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",  version.ref = "coroutinesCore" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test",  version.ref = "coroutinesCore" }
+mockito-core = { module = "org.mockito:mockito-core",  version.ref = "mockitoCore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

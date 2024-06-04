@@ -10,7 +10,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.android.survey.data.remoteEntities.AnswerSubmissionRequest
 import gr.android.survey.domain.uiModels.AnsweredQuestionUiModel
+import gr.android.survey.domain.uiModels.QuestionsUiModel
 import gr.android.survey.domain.usecases.AnsweredQuestionUseCase
+import gr.android.survey.domain.usecases.ClearSurveyUseCase
 import gr.android.survey.domain.usecases.QuestionsUseCase
 import gr.android.survey.domain.utils.Resource
 import gr.android.survey.utils.Button
@@ -23,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class QuestionsViewModel @Inject constructor(
     private val questionsUseCase: QuestionsUseCase,
-    private val answeredQuestionUseCase: AnsweredQuestionUseCase
+    private val answeredQuestionUseCase: AnsweredQuestionUseCase,
+    private val clearSurveyUseCase: ClearSurveyUseCase
 ): ViewModel() {
 
     private var _uiState = MutableQuestionsUiState()
@@ -35,22 +38,16 @@ class QuestionsViewModel @Inject constructor(
         allReadCollector()
         answeredQuestionItemCollector()
         submittedQuestionsNumCollector()
-        questionCounterCollector()
     }
 
-    private fun questionCounterCollector() {
-        viewModelScope.launch {
-            answeredQuestionUseCase.questionCounter.collectLatest {
-                updateQuestionCounter(it)
-            }
-        }
-    }
     private fun getQuestionsCollector(){
         viewModelScope.launch {
             questionsUseCase.getQuestions()
             questionsUseCase.questions.collectLatest {
+                updateLoaderVisibility(true)
                 when(it) {
                     is Resource.Success -> {
+                        updateAnsweredQuestion(it.data)
                         updateQuestionsListSize(it.data?.questions?.size ?: 0)
                         updateLoaderVisibility(false)
                     }
@@ -59,17 +56,14 @@ class QuestionsViewModel @Inject constructor(
                         updateSurveyState(SurveyRemoteState.FETCH_LIST_ERROR)
                         updateErrorMessage(it.message ?: "")
                     }
-                    is Resource.Loading -> {
-                        updateLoaderVisibility(true)
-                    }
                 }
             }
         }
     }
 
-    fun getAnsweredQuestionByIndex(buttonAction: String = Button.CURRENT.action) {
+    fun getAnsweredQuestionByIndex(buttonAction: String = Button.CURRENT.action, index: Int) {
         viewModelScope.launch {
-            answeredQuestionUseCase.getAnsweredQuestionByIndex(buttonAction)
+            answeredQuestionUseCase.getAnsweredQuestionByIndex(buttonAction, index)
         }
     }
 
@@ -93,7 +87,7 @@ class QuestionsViewModel @Inject constructor(
         viewModelScope.launch {
             answeredQuestionUseCase.allReady.collectLatest {
                 if (it) {
-                    getAnsweredQuestionByIndex()
+                    getAnsweredQuestionByIndex(index = 0)
                 }
             }
         }
@@ -102,6 +96,7 @@ class QuestionsViewModel @Inject constructor(
     private fun postQuestionCollector() {
         viewModelScope.launch {
             questionsUseCase.postAnsweredQuestionResult.collectLatest {
+                updateLoaderVisibility(true)
                 when(it) {
                     is Resource.Success -> {
                         _uiState.answeredQuestionUiModel.let {
@@ -114,9 +109,6 @@ class QuestionsViewModel @Inject constructor(
                         }
                         updateLoaderVisibility(false)
                     }
-                    is Resource.Loading -> {
-                        updateLoaderVisibility(false)
-                    }
                     is Resource.Error -> {
                         updateLoaderVisibility(false)
                         updateSurveyState(SurveyRemoteState.POST_ERROR)
@@ -127,9 +119,9 @@ class QuestionsViewModel @Inject constructor(
         }
     }
     fun postQuestion(id: Int, answer: String) {
+        updateAnsweredText(answer)
         viewModelScope.launch{
             questionsUseCase.postQuestions(AnswerSubmissionRequest(id, answer))
-            updateAnsweredText(answer)
         }
     }
 
@@ -146,6 +138,10 @@ class QuestionsViewModel @Inject constructor(
 
     private fun updateAnsweredQuestion(answeredQuestionUiModel: AnsweredQuestionUiModel?) {
         _uiState.answeredQuestionUiModel = answeredQuestionUiModel
+    }
+
+    private fun updateAnsweredQuestion(questionsUiModel: QuestionsUiModel?) {
+        _uiState.questionsUiModel = questionsUiModel
     }
 
     private fun updateAnsweredText(answeredText: String) {
@@ -168,7 +164,7 @@ class QuestionsViewModel @Inject constructor(
         _uiState.submittedQuestions = submittedQuestions
     }
 
-    private fun updateQuestionCounter(questionCounter: Int) {
+    fun updateQuestionCounter(questionCounter: Int) {
         _uiState.questionCounter = questionCounter
     }
 
@@ -181,9 +177,14 @@ class QuestionsViewModel @Inject constructor(
         _uiState.errorMessage = errorMessage
     }
 
+    fun resetSurvey() {
+        clearSurveyUseCase.resetSurvey()
+    }
+
     @Stable
     interface QuestionsUiState {
         val answeredQuestionUiModel: AnsweredQuestionUiModel?
+        val questionsUiModel: QuestionsUiModel?
         val answerText: String?
         val surveyState: SurveyRemoteState
         val questionsListSize: Int
@@ -195,15 +196,17 @@ class QuestionsViewModel @Inject constructor(
     }
 
     class MutableQuestionsUiState(
-        answeredQuestionUiModel: AnsweredQuestionUiModel? = null
+        answeredQuestionUiModel: AnsweredQuestionUiModel? = null,
+        questionsUiModel: QuestionsUiModel? = null
     ): QuestionsUiState {
         override var answeredQuestionUiModel: AnsweredQuestionUiModel? by mutableStateOf(answeredQuestionUiModel)
+        override var questionsUiModel: QuestionsUiModel? by mutableStateOf(questionsUiModel)
         override var answerText: String? by mutableStateOf(null)
         override var surveyState: SurveyRemoteState by mutableStateOf(SurveyRemoteState.OTHER)
         override var questionsListSize: Int by mutableIntStateOf(0)
         override var loaderVisibility: Boolean by mutableStateOf(false)
         override var submittedQuestions: Int by mutableIntStateOf(0)
-        override var questionCounter: Int by mutableIntStateOf(0)
+        override var questionCounter: Int by mutableIntStateOf(1)
         override var clickableBackground: Boolean by mutableStateOf(true)
         override var errorMessage: String? by mutableStateOf(null)
     }

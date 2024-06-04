@@ -21,6 +21,6 @@ suspend fun <T> call(
             else -> Result.ServerError(response.code(), -1, "Unexpected error")
         }
     } catch (e: Exception) {
-        Result.NetworkError(e)
+        Result.NetworkError("Network Error")
     }
 }

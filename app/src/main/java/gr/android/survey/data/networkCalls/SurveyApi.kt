@@ -9,12 +9,12 @@ import retrofit2.http.POST
 
 interface SurveyApi {
 
-//    @GET("Http://192.168.2.2:8068/questions")
-    @GET("/questions")
+    @GET("Http://192.168.2.2:8068/questions")
+//    @GET("/questions")
     suspend fun getQuestions(): Response<RemoteSurvey>
 
-//    @POST("Http://192.168.2.2:8068/question/submit")
-    @POST("/question/submit")
+    @POST("Http://192.168.2.2:8068/question/submit")
+//    @POST("/question/submit")
     suspend fun postQuestion(@Body answerSubmissionRequest: AnswerSubmissionRequest): Response<Unit>
 
 }
