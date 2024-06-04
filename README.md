@@ -33,9 +33,9 @@ The app follows a unidirectional data flow style, ensuring a predictable state m
 ### Dependency Injection (DI) with Hilt
 Hilt simplifies dependency injection by providing:
 
-+Easy setup and configuration.
-+Scoped components for better lifecycle management.
-+Integration with Jetpack libraries.
++ Easy setup and configuration.
++ Scoped components for better lifecycle management.
++ Integration with Jetpack libraries.
 
 ### Network Communication with Retrofit
 Retrofit provides:
