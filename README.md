@@ -13,7 +13,7 @@ The Survey App is a mobile application designed to conduct surveys efficiently. 
 + Jetpack Compose: A modern toolkit for building native Android UI.
 
 ## Architecture
-## MVVM Architecture
+### MVVM Architecture
 
 The app follows the MVVM (Model-View-ViewModel) pattern to separate the business logic from the UI. Here's a brief overview:
 
@@ -21,7 +21,7 @@ The app follows the MVVM (Model-View-ViewModel) pattern to separate the business
 + View: Displays the data to the user and handles user interactions.
 + ViewModel: Acts as a mediator between the View and the Model. It provides data to the View and handles user actions, updating the Model accordingly.
   
-## Unidirectional Data Flow
+### Unidirectional Data Flow
 The app follows a unidirectional data flow style, ensuring a predictable state management system:
 
 + State: Represents the entire state of the UI.
@@ -30,21 +30,21 @@ The app follows a unidirectional data flow style, ensuring a predictable state m
 + Actions: Invoked by the ViewModel to update the state.
   
 ## Technologies
-## Dependency Injection (DI) with Hilt
+### Dependency Injection (DI) with Hilt
 Hilt simplifies dependency injection by providing:
 
 +Easy setup and configuration.
 +Scoped components for better lifecycle management.
 +Integration with Jetpack libraries.
 
-## Network Communication with Retrofit
+### Network Communication with Retrofit
 Retrofit provides:
 
 + Type-safe HTTP client.
 + Simple API for defining endpoints and requests.
 + Seamless integration with coroutines for asynchronous operations.
   
-## UI with Jetpack Compose
+### UI with Jetpack Compose
 Jetpack Compose offers:
 
 + Declarative UI programming.
@@ -52,7 +52,7 @@ Jetpack Compose offers:
 + Powerful and flexible layout system.
 
 ## Testing
-## Unit Tests
+### Unit Tests
 The app includes unit tests to ensure the correctness of:
 
 + ViewModels
