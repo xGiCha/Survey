@@ -1,4 +1,4 @@
-**# Survey App**
+**#Survey App**
 **## Overview**
 
 The Survey App is a mobile application designed to conduct surveys efficiently. It leverages modern Android technologies such as Dependency Injection (DI), Hilt, Retrofit, Unit Tests, MVVM architecture, and Jetpack Compose to provide a robust, scalable, and responsive user experience. The app follows a unidirectional data flow style with UI state management.
