@@ -9,8 +9,8 @@ import gr.android.survey.data.dataSource.QuestionsNetworkDataSourceImpl
 import gr.android.survey.data.networkCalls.SurveyApi
 import gr.android.survey.data.repository.AnsweredQuestionsRepository
 import gr.android.survey.data.repository.AnsweredQuestionsRepositoryImp
-import gr.android.survey.data.repository.ClearSurveyUseCase
-import gr.android.survey.data.repository.ClearSurveyUseCaseImpl
+import gr.android.survey.domain.usecases.ClearSurveyUseCase
+import gr.android.survey.domain.usecases.ClearSurveyUseCaseImpl
 import gr.android.survey.data.repository.QuestionsRepository
 import gr.android.survey.data.repository.QuestionsRepositoryImp
 import gr.android.survey.domain.usecases.AnsweredQuestionUseCase
@@ -66,9 +66,12 @@ object AppModule {
     @Singleton
     @Provides
     fun provideClearSurveyUseCase(
-        answeredQuestionsRepository: AnsweredQuestionsRepository
+        answeredQuestionsRepository: AnsweredQuestionsRepository,
+        questionsRepository : QuestionsRepository,
+        answeredQuestionUseCase : AnsweredQuestionUseCase,
+        questionsUseCase : QuestionsUseCase
     ): ClearSurveyUseCase {
-        return ClearSurveyUseCaseImpl(answeredQuestionsRepository)
+        return ClearSurveyUseCaseImpl(answeredQuestionsRepository, questionsRepository, answeredQuestionUseCase, questionsUseCase)
     }
 
 }

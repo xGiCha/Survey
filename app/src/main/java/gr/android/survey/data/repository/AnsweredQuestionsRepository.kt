@@ -23,13 +23,13 @@ class AnsweredQuestionsRepositoryImp(
 
     private val answeredQuestions: ArrayList<AnsweredQuestionItem> = arrayListOf()
 
-    private val submittedQuestionsFlow: MutableSharedFlow<Int> = MutableSharedFlow()
+    private val submittedQuestionsFlow: MutableSharedFlow<Int> = MutableSharedFlow(replay = 1)
     override val submittedQuestions: SharedFlow<Int> = submittedQuestionsFlow
 
-    private val allReadyFlow: MutableSharedFlow<Boolean> = MutableSharedFlow()
+    private val allReadyFlow: MutableSharedFlow<Boolean> = MutableSharedFlow(replay = 1)
     override val allReady: SharedFlow<Boolean> = allReadyFlow
 
-    private val itemFlow: MutableSharedFlow<AnsweredQuestionItem> = MutableSharedFlow()
+    private val itemFlow: MutableSharedFlow<AnsweredQuestionItem> = MutableSharedFlow(replay = 1)
     override val item: SharedFlow<AnsweredQuestionItem> = itemFlow
 
     override suspend fun setAnsweredQuestion(
@@ -39,17 +39,22 @@ class AnsweredQuestionsRepositoryImp(
         answeredText: String
     ) {
 
-        val index = answeredQuestions.indexOfFirst { it.id == id }
-        if (index != -1) {
-            val selectedQuestion = answeredQuestions[index]
-            val updatedQuestion = selectedQuestion.copy(answeredText = answeredText, isSubmitted = isSubmitted)
-            answeredQuestions[index] = updatedQuestion
+        if(answeredQuestions.isNotEmpty()) {
+            val index = answeredQuestions.indexOfFirst { it.id == id }
+            if (index != -1) {
+                val selectedQuestion = answeredQuestions[index]
+                val updatedQuestion =
+                    selectedQuestion.copy(answeredText = answeredText, isSubmitted = isSubmitted)
+                answeredQuestions[index] = updatedQuestion
+            }
         }
     }
 
     override suspend fun getAnsweredQuestionByIndex(buttonAction: String, index: Int) {
-        submittedQuestionsFlow.emit(answeredQuestions.filter { it.isSubmitted == true }.size)
-        itemFlow.emit(answeredQuestions[index])
+        if(answeredQuestions.isNotEmpty()) {
+            submittedQuestionsFlow.emit(answeredQuestions.filter { it.isSubmitted == true }.size)
+            itemFlow.emit(answeredQuestions[index])
+        }
     }
 
     override suspend fun setInitQuestionList(questionList: RemoteSurvey) {

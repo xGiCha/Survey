@@ -32,14 +32,13 @@ import gr.android.survey.ui.viewModel.QuestionsViewModel
 
 @Composable
 fun MainScreen(
-    questionsViewModel: QuestionsViewModel = hiltViewModel(),
     navigateToSurvey: () -> Unit
 ) {
 
     MainScreenContent(
         navigateToSurvey = {
             navigateToSurvey()
-            questionsViewModel.resetSurvey()
+
         }
     )
 

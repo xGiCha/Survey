@@ -9,10 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import gr.android.survey.data.remoteEntities.AnswerSubmissionRequest
-import gr.android.survey.data.repository.ClearSurveyUseCase
 import gr.android.survey.domain.uiModels.AnsweredQuestionUiModel
 import gr.android.survey.domain.uiModels.QuestionsUiModel
 import gr.android.survey.domain.usecases.AnsweredQuestionUseCase
+import gr.android.survey.domain.usecases.ClearSurveyUseCase
 import gr.android.survey.domain.usecases.QuestionsUseCase
 import gr.android.survey.domain.utils.Resource
 import gr.android.survey.utils.Button
@@ -44,6 +44,7 @@ class QuestionsViewModel @Inject constructor(
         viewModelScope.launch {
             questionsUseCase.getQuestions()
             questionsUseCase.questions.collectLatest {
+                updateLoaderVisibility(true)
                 when(it) {
                     is Resource.Success -> {
                         updateAnsweredQuestion(it.data)
@@ -95,6 +96,7 @@ class QuestionsViewModel @Inject constructor(
     private fun postQuestionCollector() {
         viewModelScope.launch {
             questionsUseCase.postAnsweredQuestionResult.collectLatest {
+                updateLoaderVisibility(true)
                 when(it) {
                     is Resource.Success -> {
                         _uiState.answeredQuestionUiModel.let {

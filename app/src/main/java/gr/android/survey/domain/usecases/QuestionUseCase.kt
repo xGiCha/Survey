@@ -10,6 +10,7 @@ import gr.android.survey.domain.utils.Resource
 import gr.android.survey.utils.mapToQuestionsUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,6 +23,7 @@ interface QuestionsUseCase {
 
     suspend fun getQuestions()
     suspend fun postQuestions(answerSubmissionRequest: AnswerSubmissionRequest)
+    fun reset()
 }
 
 class QuestionsUseCaseImpl(
@@ -30,10 +32,10 @@ class QuestionsUseCaseImpl(
 ) : QuestionsUseCase {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val questionsItemsFlow: MutableSharedFlow<Resource<QuestionsUiModel>> = MutableSharedFlow()
+    private val questionsItemsFlow: MutableSharedFlow<Resource<QuestionsUiModel>> = MutableSharedFlow(replay = 1)
     override val questions: SharedFlow<Resource<QuestionsUiModel>> = questionsItemsFlow
 
-    private val postAnsweredQuestionResultFlow: MutableSharedFlow<Resource<Boolean>> = MutableSharedFlow()
+    private val postAnsweredQuestionResultFlow: MutableSharedFlow<Resource<Boolean>> = MutableSharedFlow(replay = 1)
     override val postAnsweredQuestionResult: SharedFlow<Resource<Boolean>> = postAnsweredQuestionResultFlow
 
 
@@ -50,7 +52,7 @@ class QuestionsUseCaseImpl(
                     }
 
                     is Result.NetworkError -> {
-                        questionsItemsFlow.emit(Resource.Error(message = it.exception.message ?: ""))
+                        questionsItemsFlow.emit(Resource.Error(it.errorMessage ?: ""))
                     }
 
                     is Result.ClientError -> {
@@ -70,7 +72,7 @@ class QuestionsUseCaseImpl(
                     }
 
                     is Result.NetworkError -> {
-                        postAnsweredQuestionResultFlow.emit(Resource.Error(message = it.exception.message ?: ""))
+                        postAnsweredQuestionResultFlow.emit(Resource.Error(it.errorMessage ?: ""))
                     }
 
                     is Result.ClientError -> {
@@ -82,7 +84,7 @@ class QuestionsUseCaseImpl(
     }
 
     override suspend fun getQuestions() {
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             questionsRepository.getQuestions()
         }
     }
@@ -91,5 +93,11 @@ class QuestionsUseCaseImpl(
         scope.launch(Dispatchers.IO) {
             questionsRepository.postQuestions(answerSubmissionRequest)
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun reset() {
+        questionsItemsFlow.resetReplayCache()
+        postAnsweredQuestionResultFlow.resetReplayCache()
     }
 }

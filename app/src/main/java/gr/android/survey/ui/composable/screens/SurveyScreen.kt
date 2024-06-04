@@ -1,5 +1,6 @@
 package gr.android.survey.ui.composable.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +63,10 @@ fun SurveyScreen(
     questionsViewModel: QuestionsViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
+    BackHandler(onBack = {
+        questionsViewModel.resetSurvey()
+        onBack()
+    })
     val answeredQuestion = questionsViewModel.uiState.answeredQuestionUiModel
 
     SurveyScreenContent(
@@ -88,7 +94,10 @@ fun SurveyScreen(
             questionsViewModel.updateSurveyState(state)
             questionsViewModel.getAnsweredQuestionByIndex(buttonAction = CURRENT.action, index)
         },
-        onBack = onBack,
+        onBack = {
+            questionsViewModel.resetSurvey()
+            onBack()
+        },
         onClickableBackground = {
             questionsViewModel.updateClickableBackground(it)
         },
@@ -131,6 +140,7 @@ fun SurveyScreenContent(
     val previousPageIndex = remember { mutableStateOf(pagerState.currentPage) }
 
     LaunchedEffect(pagerState.currentPage) {
+        inputValue.value = TextFieldValue("")
         onQuestionCounter(pagerState.currentPage)
         if (pagerState.currentPage > previousPageIndex.value) {
             nextQuestion(NEXT.action, pagerState.currentPage)
