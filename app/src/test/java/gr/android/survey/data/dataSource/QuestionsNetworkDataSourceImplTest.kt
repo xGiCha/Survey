@@ -4,6 +4,7 @@ import gr.android.survey.data.networkCalls.SurveyApi
 import gr.android.survey.data.remoteEntities.AnswerSubmissionRequest
 import gr.android.survey.data.remoteEntities.RemoteSurvey
 import gr.android.survey.data.remoteEntities.RemoteSurveyItem
+import gr.android.survey.data.utils.Result
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,9 +18,8 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import retrofit2.Response
-import gr.android.survey.data.utils.Result
 import org.mockito.kotlin.mock
+import retrofit2.Response
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class QuestionsNetworkDataSourceImplTest {

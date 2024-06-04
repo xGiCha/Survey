@@ -4,18 +4,14 @@ import gr.android.survey.data.remoteEntities.RemoteSurvey
 import gr.android.survey.data.remoteEntities.RemoteSurveyItem
 import gr.android.survey.data.repository.AnsweredQuestionsRepository
 import gr.android.survey.data.repository.AnsweredQuestionsRepositoryImp
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AnsweredQuestionUseCaseImplTest {
 
     private lateinit var answeredQuestionsRepository: AnsweredQuestionsRepository
@@ -44,8 +40,6 @@ class AnsweredQuestionUseCaseImplTest {
         }
         // when
         answeredQuestionsRepository.setInitQuestionList(remoteSurvey)
-
-        // When
         useCase.getAnsweredQuestionByIndex(buttonAction, index)
 
         // Then
@@ -87,7 +81,6 @@ class AnsweredQuestionUseCaseImplTest {
         // when
         answeredQuestionsRepository.setInitQuestionList(remoteSurvey)
         answeredQuestionsRepository.getAnsweredQuestionByIndex("", 0)
-
         useCase.getAnsweredQuestionByIndex("", 0)
 
         // Then

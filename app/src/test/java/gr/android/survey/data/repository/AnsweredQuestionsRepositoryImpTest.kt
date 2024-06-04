@@ -1,7 +1,6 @@
 package gr.android.survey.data.repository
 
 
-import gr.android.survey.data.dataSource.QuestionsNetworkDataSourceImpl
 import gr.android.survey.data.remoteEntities.RemoteSurvey
 import gr.android.survey.data.remoteEntities.RemoteSurveyItem
 import junit.framework.TestCase.assertEquals
@@ -99,7 +98,6 @@ class AnsweredQuestionsRepositoryTest {
         repository.resetValues()
 
         // Then
-        // Verify that the shared flows are reset and do not emit any values
         assertTrue(repository.submittedQuestions.replayCache.isEmpty())
         assertTrue(repository.allReady.replayCache.isEmpty())
         assertTrue(repository.item.replayCache.isEmpty())

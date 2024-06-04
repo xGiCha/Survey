@@ -17,7 +17,6 @@ import gr.android.survey.domain.usecases.ClearSurveyUseCase
 import gr.android.survey.domain.usecases.ClearSurveyUseCaseImpl
 import gr.android.survey.domain.usecases.QuestionsUseCase
 import gr.android.survey.domain.usecases.QuestionsUseCaseImpl
-import gr.android.survey.domain.utils.Resource
 import gr.android.survey.utils.SurveyRemoteState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +25,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -66,6 +66,7 @@ class QuestionsViewModelTest {
         clearSurveyUseCase = ClearSurveyUseCaseImpl(answeredQuestionsRepository, questionsRepository, answeredQuestionUseCase, questionsUseCase)
     }
 
+    @After
     fun cleanUp() {
         Dispatchers.resetMain()
     }
@@ -110,8 +111,6 @@ class QuestionsViewModelTest {
         assertEquals(false, viewModel.uiState.loaderVisibility)
     }
 
-    // Write similar tests for other methods and scenarios...
-
     @Test
     fun `test getAnsweredQuestionByIndex`() = runTest {
         // Given
@@ -138,11 +137,9 @@ class QuestionsViewModelTest {
     @Test
     fun `test postQuestionCollector emits Success`() = runTest {
         // Given
-        // Given
         val request = AnswerSubmissionRequest(1 , "Answer 1")
         val response = Result.Success(Unit)
         Mockito.`when`(questionsNetworkDataSource.postQuestions(request)).thenReturn(response)
-        val resource = Resource.Success(true)
 
         // When
         viewModel = QuestionsViewModel(questionsUseCase, answeredQuestionUseCase, clearSurveyUseCase)

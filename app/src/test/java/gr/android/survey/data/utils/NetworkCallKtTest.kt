@@ -23,11 +23,9 @@ import retrofit2.Response
 @ExperimentalCoroutinesApi
 class NetworkCallKtTest {
 
-    // To execute LiveData-related tasks synchronously
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
-    // Mock serviceCall function
     @Mock
     private lateinit var serviceCallMock: suspend () -> Response<String>
 
@@ -76,7 +74,7 @@ class NetworkCallKtTest {
         assert((result as Result.ClientError).httpCode == 400)
         assert(result.errorMessage == "Bad Request")
     }
-//
+
     @Test
     fun `test call server error`() = runBlocking {
         // Given
